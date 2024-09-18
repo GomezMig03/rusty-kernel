@@ -1,5 +1,7 @@
 use volatile::Volatile;
 use core::fmt;
+use lazy_static::lazy_static;
+use spin::Mutex;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -22,6 +24,7 @@ pub enum Color {
     Yellow = 14,
     White = 15,
 }
+
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)] // Guarantees ColorCode to use the same layout as u8
@@ -126,15 +129,10 @@ impl Writer {
     }
 }
 
-pub fn print_something() {
-    use core::fmt::Write;
-    let mut writer = Writer {
+lazy_static! {
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
         color_code: ColorCode::new(Color::Yellow, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    };
-
-    writer.write_byte(b'H');
-    writer.write_string("ello! ");
-    write!(writer, "The numbers are {} and {}", 42, 1.0/3.0).unwrap();
+    });
 }
