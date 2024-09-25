@@ -58,8 +58,9 @@ pub struct Writer {
     buffer: &'static mut Buffer, //VGA address
 }
 
-// Method to write a single byte
 impl Writer {
+    /// Writes a single byte to the VGA buffer.
+    /// Non-printable characters are replaced by a placeholder (0xfe).
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
             b'\n' => self.new_line(),
@@ -116,6 +117,7 @@ impl fmt::Write for Writer {
 
 
 impl Writer {
+    /// Writes an entire string slice to the VGA buffer
     pub fn write_string(&mut self, s: &str) {
         for byte in s.bytes() {
             match byte {
@@ -152,4 +154,32 @@ macro_rules! println {
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     WRITER.lock().write_fmt(args).unwrap();
+}
+
+#[test_case]
+fn test_print() {
+    print!("Testing print");
+    println!("Testing println");
+}
+
+#[test_case]
+fn test_print_many() {
+    for _ in 0..200 {
+        println!("Testing many prints")
+    }
+}
+
+#[test_case]
+fn test_print_long() {
+    println!("Testing a really really really really really really really really really really really really really really long line");
+}
+
+#[test_case]
+fn test_println_output() {
+    let s = "Some test string that fits on a single line";
+    println!("{}", s);
+    for (i, c) in s.chars().enumerate() {
+        let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
+        assert_eq!(char::from(screen_char.ascii_character), c);
+    }
 }
