@@ -9,8 +9,8 @@ use rusty_kernel::println;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    rusty_kernel::init();
     println!("Hello World{}", "!");
-    println!("Testing a really really really really really really really really really really really really really really long line");
 
     #[cfg(test)]
     test_main();
