@@ -12,7 +12,7 @@ Then you can test the kernel, this command will compile and invisibly run qemu t
 cargo test
 ```
 
-Or directly run it, this will compile the kernel, make it bootable thanks to the bootloader dependency, and then run it through qemu:
+Or directly run it, this will compile the kernel, make it bootable thanks to the bootloader and bootimage dependencies, and then run it through qemu:
 ```
 cargo run
 ```
